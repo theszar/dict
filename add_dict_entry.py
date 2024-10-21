@@ -34,30 +34,25 @@ def insert_new_entry():
     new_entry =  "\\entry{" + v1 + "}{" + t + "}{" + v3 + "}"
     full_path =  script_dir.absolute().as_posix() + "/" + file_name
 
+    pattern = r"\{([^}]*)\}"
+    all_into_list = []
+    with open(full_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            matches = re.findall(pattern, line)
+
+            if matches and len(matches) > 1:
+                all_into_list.append(line.strip())
+                if matches[0] == v1 and matches[1] == t:
+                    print("\n" + t + " '" + v1 + "' already exists in the dictionary")
+                    input("Press 'Enter' to close.")
+                    return
+        all_into_list.append(new_entry)
+        sorted_list = sorted(all_into_list, key=str.casefold)
+
     answer = input( "\nAdd new entry to dictionary? 'y/n'" )
     if answer.lower() == "y" or answer.lower() == "":
-        pattern = r"\{([^}]*)\}"
-        # data_dict = {}
-        all_into_list = []
-        with open(full_path, 'r', encoding='utf-8') as file:
-            for line in file:
-                matches = re.findall(pattern, line)
-
-                if matches and len(matches) > 1:
-                    all_into_list.append(line.strip())
-                    if matches[0] == v1 and matches[1] == t:
-                        print("\n" + t + " '" + v1 + "' already exists in the dictionary")
-                        input("Press 'Enter' to close.")
-                        return
-            all_into_list.append(new_entry)
-            sorted_list = sorted(all_into_list, key=str.casefold)
-
         with open(full_path, 'w', encoding='utf-8') as file:
-             file.write("\n".join(str(n) for n in sorted_list) + "\n")
-        # input("Press 'Enter' to close.")
-    else:
-        return
-
+            file.write("\n".join(str(n) for n in sorted_list) + "\n")
 
 def main():
     insert_new_entry()
